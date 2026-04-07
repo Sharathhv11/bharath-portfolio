@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
-import { ArrowRight, FileText, MapPin, Download, Linkedin, Settings, Layers, Wrench, PenTool, FileCog } from "lucide-react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
+import { ArrowRight, FileText, MapPin, Download, Linkedin, Layers, PenTool, Wrench, Settings, FileCog } from "lucide-react";
 import { motion, useReducedMotion, useMotionValue, useSpring, useTransform, useMotionTemplate } from "framer-motion";
 import { engineer } from "@/lib/content";
 
@@ -41,104 +41,68 @@ function TypewriterText({ text, delay = 0 }: { text: string; delay?: number }) {
   );
 }
 
-function HeroFlightVisual({ reduceMotion }: { reduceMotion: boolean | null }) {
+function HeroParticleVisual({ reduceMotion }: { reduceMotion: boolean | null }) {
+  const particles = useMemo(() => {
+    const items = [];
+    const numParticles = 400; // lots of particles to mimic the dense burst
+    for (let i = 0; i < numParticles; i++) {
+      // Concentrate slightly more towards the center but allow a wide spread
+      const radius = 100 + Math.pow(Math.random(), 1.5) * 800; 
+      const angle = Math.random() * 2 * Math.PI;
+      const length = 4 + Math.random() * 12; // varying dash lengths
+      const thickness = 1.5 + Math.random() * 2.5; 
+      const opacity = 0.2 + Math.random() * 0.7; // subtle opacity differences
+      
+      const x = Math.cos(angle) * radius;
+      
+      // Color based on x position to mimic left-warm, right-cool gradient
+      let color = "#cbd5e1"; // slate-300 default center
+      if (x < -80) {
+        // Red/Orange/Yellow on the left
+        const warm = ["#ef4444", "#f97316", "#f59e0b", "#fbbf24", "#fda4af"];
+        color = warm[Math.floor(Math.random() * warm.length)];
+      } else if (x > 80) {
+        // Blue/Teal on the right
+        const cool = ["#3b82f6", "#2563eb", "#0ea5e9", "#38bdf8", "#818cf8"];
+        color = cool[Math.floor(Math.random() * cool.length)];
+      } else {
+        // Mixed near the center
+        const mixed = ["#fcd34d", "#7dd3fc", "#c4b5fd", "#fca5a5"];
+        color = mixed[Math.floor(Math.random() * mixed.length)];
+      }
+
+      items.push({ radius, angle, length, thickness, color, opacity });
+    }
+    return items;
+  }, []);
+
   return (
-    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_28%,rgba(255,255,255,0.08),transparent_0,transparent_32%),radial-gradient(circle_at_62%_70%,rgba(255,255,255,0.05),transparent_0,transparent_28%)]" />
+    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden flex items-center justify-center mix-blend-multiply opacity-70">
       <motion.div
-        aria-hidden="true"
-        className="absolute right-[4%] top-[12%] hidden h-[30rem] w-[36rem] lg:block"
-        initial={reduceMotion ? undefined : { opacity: 0, scale: 0.96 }}
-        animate={reduceMotion ? undefined : { opacity: 1, scale: 1 }}
-        transition={{ duration: 1.4, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        initial={reduceMotion ? undefined : { rotate: 0 }}
+        animate={reduceMotion ? undefined : { rotate: 360 }}
+        transition={{ duration: 180, repeat: Infinity, ease: "linear" }}
+        className="absolute h-[150vw] w-[150vw] sm:h-[120vw] sm:w-[120vw] max-w-[2000px] max-h-[2000px]"
       >
-        <svg
-          viewBox="0 0 620 520"
-          className="h-full w-full"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <defs>
-            <linearGradient id="flightPath" x1="60" y1="390" x2="570" y2="90" gradientUnits="userSpaceOnUse">
-              <stop stopColor="rgba(255,255,255,0.04)" />
-              <stop offset="0.45" stopColor="rgba(255,255,255,0.45)" />
-              <stop offset="1" stopColor="rgba(255,255,255,0.8)" />
-            </linearGradient>
-            <linearGradient id="flightGlow" x1="120" y1="370" x2="540" y2="120" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#f5f5f5" stopOpacity="0" />
-              <stop offset="0.55" stopColor="#d4d4d4" stopOpacity="0.9" />
-              <stop offset="1" stopColor="#ffffff" stopOpacity="0.4" />
-            </linearGradient>
-            <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="8" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
-
-          <path
-            d="M70 388C170 412 238 376 294 322C357 262 410 188 548 112"
-            className="flight-path-line"
-            stroke="url(#flightPath)"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-          <path
-            d="M70 388C170 412 238 376 294 322C357 262 410 188 548 112"
-            className="flight-path-pulse"
-            stroke="url(#flightGlow)"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-
-          <motion.g
-            initial={reduceMotion ? undefined : { offsetDistance: "0%" }}
-            animate={reduceMotion ? undefined : { offsetDistance: "100%" }}
-            transition={
-              reduceMotion
-                ? undefined
-                : { duration: 6, repeat: Number.POSITIVE_INFINITY, ease: "easeIn" }
-            }
-            style={{
-              offsetPath:
-                "path('M70 388C170 412 238 376 294 322C357 262 410 188 548 112')",
-              offsetRotate: "auto",
-            }}
-          >
-            <g filter="url(#softGlow)">
-              <path
-                d="M-30 0H-75"
-                stroke="#d4d4d4"
-                strokeOpacity="0.85"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <path
-                d="M-76 0H-130"
-                stroke="#d4d4d4"
-                strokeOpacity="0.35"
-                strokeWidth="6"
-                strokeLinecap="round"
-              />
-            </g>
-            <image href="/flight.png" width="80" height="80" x="-40" y="-40" />
-          </motion.g>
-
-          <motion.circle
-            cx="548"
-            cy="112"
-            r="5"
-            fill="#ffffff"
-            initial={reduceMotion ? undefined : { scale: 0.8, opacity: 0.45 }}
-            animate={
-              reduceMotion
-                ? undefined
-                : { scale: [0.8, 1.5, 0.8], opacity: [0.35, 0.9, 0.35] }
-            }
-            transition={reduceMotion ? undefined : { duration: 3.5, repeat: Number.POSITIVE_INFINITY }}
-          />
+        <svg viewBox="-1000 -1000 2000 2000" className="h-full w-full">
+          {particles.map((p, i) => {
+            // Place along the tangent to the circle
+            const rotation = (p.angle * 180) / Math.PI + 90;
+            return (
+              <g key={i} transform={`translate(${Math.cos(p.angle) * p.radius}, ${Math.sin(p.angle) * p.radius}) rotate(${rotation})`}>
+                <line
+                  x1={-p.length / 2}
+                  y1={0}
+                  x2={p.length / 2}
+                  y2={0}
+                  stroke={p.color}
+                  strokeWidth={p.thickness}
+                  strokeLinecap="round"
+                  opacity={p.opacity}
+                />
+              </g>
+            );
+          })}
         </svg>
       </motion.div>
     </div>
@@ -183,71 +147,26 @@ function HoverButton({
 
 export function Hero() {
   const reduceMotion = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
-
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const pointerX = useMotionValue(0);
-  const pointerY = useMotionValue(0);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current || reduceMotion) return;
-    const { left, top, width, height } = ref.current.getBoundingClientRect();
-    
-    // For 3D Tilt effect
-    const x = (e.clientX - left - width / 2) / 25;
-    const y = (e.clientY - top - height / 2) / 25;
-    mouseX.set(x);
-    mouseY.set(y);
-
-    // For background antigravity pointer glow
-    pointerX.set(e.clientX - left);
-    pointerY.set(e.clientY - top);
-  };
-
-  const handleMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
-    // Optional: Return spotlight to center or leave where left
-  };
-
-  const springConfig = { damping: 25, stiffness: 150 };
-  const smoothPointerX = useSpring(pointerX, springConfig);
-  const smoothPointerY = useSpring(pointerY, springConfig);
-  const glowTemplate = useMotionTemplate`radial-gradient(600px circle at ${smoothPointerX}px ${smoothPointerY}px, rgba(147, 51, 234, 0.45) 0%, rgba(59, 130, 246, 0.25) 40%, transparent 80%)`;
-
-  const rotateX = useSpring(useTransform(mouseY, [-15, 15], [8, -8]), springConfig);
-  const rotateY = useSpring(useTransform(mouseX, [-15, 15], [-8, 8]), springConfig);
-  const translateX = useSpring(useTransform(mouseX, [-15, 15], [-15, 15]), springConfig);
-  const translateY = useSpring(useTransform(mouseY, [-15, 15], [-15, 15]), springConfig);
 
   return (
     <section
       id="top"
-      ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
       className="hero-background relative flex min-h-[85vh] md:min-h-screen overflow-hidden px-6 pb-12 pt-[100px] md:px-10 md:pb-16 md:pt-[100px] lg:pt-[100px] group items-start lg:items-center"
     >
-      <motion.div
-        className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-500 opacity-0 group-hover:opacity-100"
-        style={{ backgroundImage: glowTemplate }}
-      />
-
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute left-[5%] top-[20%] h-96 w-96 rounded-full bg-emerald-400/20 blur-[120px] animate-pulse" />
         <div className="absolute right-[10%] top-[30%] h-80 w-80 rounded-full bg-blue-400/15 blur-[100px] animate-pulse [animation-delay:2s]" />
         <div className="absolute left-[50%] top-[70%] h-72 w-72 rounded-full bg-purple-300/10 blur-[90px] animate-pulse [animation-delay:4s]" />
       </div>
       
-      <HeroFlightVisual reduceMotion={reduceMotion} />
+      <HeroParticleVisual reduceMotion={reduceMotion} />
       <div className="absolute inset-x-0 bottom-[18%] h-52 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.08),transparent_58%)] blur-3xl" />
       <div className="absolute left-[-15%] top-1/4 h-40 w-[40rem] rotate-[-10deg] bg-gradient-to-r from-transparent via-emerald-100/20 to-transparent blur-2xl animate-streak" />
       <div className="absolute right-[-10%] top-[58%] h-32 w-[36rem] rotate-[-8deg] bg-gradient-to-r from-transparent via-blue-100/15 to-transparent blur-2xl [animation-delay:4s] animate-streak" />
 
       <div className="relative z-10 mx-auto grid w-full max-w-6xl gap-8 md:gap-10 lg:grid-cols-[6fr_4fr] lg:items-start">
         {/* Left Division: Information & Buttons */}
-        <div className="flex flex-col items-start justify-center gap-8 md:gap-10">
+        <div className="flex flex-col items-start justify-center gap-8 md:gap-10 order-2 lg:order-1">
           <motion.div
             initial={reduceMotion ? undefined : { opacity: 0, y: 32 }}
             animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
@@ -312,8 +231,8 @@ export function Hero() {
         </div>
 
         {/* Right Division: Animated Image Orbits */}
-        <div className="relative hidden md:flex items-start justify-center w-full lg:pt-12">
-          <div className="relative h-64 w-64 md:h-[300px] md:w-[300px] lg:h-[360px] lg:w-[360px]">
+        <div className="relative flex items-center lg:items-start justify-center w-full lg:pt-12 order-1 lg:order-2 mb-12 md:mb-0">
+          <div className="relative h-64 w-64 md:h-[300px] md:w-[300px] lg:h-[360px] lg:w-[360px] mt-8 lg:mt-0">
             
             {/* Outer Orbit */}
             <motion.div
