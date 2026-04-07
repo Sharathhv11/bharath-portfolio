@@ -1,0 +1,122 @@
+﻿"use client";
+
+import { ArrowRight, FileText, MapPin } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { engineer } from "@/lib/content";
+
+export function Hero() {
+  const reduceMotion = useReducedMotion();
+
+  return (
+    <section
+      id="top"
+      className="relative flex min-h-screen items-center overflow-hidden px-6 pb-16 pt-28 md:px-10"
+    >
+      <div className="absolute inset-0 bg-grid bg-[size:120px_120px] opacity-[0.08]" />
+      <div className="absolute inset-x-0 top-[18%] h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent animate-pulseLine" />
+      <div className="absolute left-[-15%] top-1/4 h-40 w-[40rem] rotate-[-10deg] bg-gradient-to-r from-transparent via-sky-300/15 to-transparent blur-2xl animate-streak" />
+      <div className="absolute right-[-10%] top-[58%] h-32 w-[36rem] rotate-[-8deg] bg-gradient-to-r from-transparent via-cyan-200/10 to-transparent blur-2xl [animation-delay:4s] animate-streak" />
+
+      <div className="relative mx-auto grid w-full max-w-7xl gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+        <motion.div
+          initial={reduceMotion ? undefined : { opacity: 0, y: 32 }}
+          animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+          transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+          className="max-w-3xl"
+        >
+          <p className="eyebrow">Takeoff Sequence</p>
+          <h1 className="mt-6 font-display text-5xl uppercase leading-[0.95] tracking-[0.1em] text-white sm:text-6xl lg:text-7xl">
+            {engineer.name}
+          </h1>
+          <p className="mt-6 text-xl text-sky-100/90 sm:text-2xl">
+            {engineer.shortRole}
+          </p>
+          <p className="mt-4 max-w-2xl text-lg leading-8 text-slate-300">
+            {engineer.tagline}
+          </p>
+
+          <div className="mt-8 flex flex-wrap items-center gap-4 text-sm text-slate-300">
+            <span className="inline-flex items-center gap-2 rounded-full border border-stroke bg-white/5 px-4 py-2">
+              <MapPin size={16} className="text-accent" />
+              {engineer.location}
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-full border border-stroke bg-white/5 px-4 py-2">
+              <FileText size={16} className="text-accent" />
+              Aircraft Structures • Repair Engineering • Production Support
+            </span>
+          </div>
+
+          <div className="mt-10 flex flex-wrap gap-4">
+            <a
+              href="#projects"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-100"
+            >
+              Explore Flight Path
+              <ArrowRight size={16} />
+            </a>
+            <a
+              href="#contact"
+              className="inline-flex items-center gap-2 rounded-full border border-stroke bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+            >
+              Start a Conversation
+            </a>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={reduceMotion ? undefined : { opacity: 0, scale: 0.96 }}
+          animate={reduceMotion ? undefined : { opacity: 1, scale: 1 }}
+          transition={{ duration: 1.2, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          className="panel relative overflow-hidden p-8 md:p-10"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-sky-400/10 via-transparent to-cyan-300/5" />
+          <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-sky-300/10 blur-3xl" />
+          <div className="relative">
+            <div className="mb-8 flex items-center justify-between">
+              <span className="font-display text-xs uppercase tracking-[0.35em] text-accent/70">
+                Flight Deck
+              </span>
+              <span className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-xs uppercase tracking-[0.25em] text-emerald-200">
+                Active
+              </span>
+            </div>
+
+            <div className="grid gap-5">
+              {[
+                {
+                  label: "Programs",
+                  value: "LCA MkII • Airbus A320",
+                },
+                {
+                  label: "Core Focus",
+                  value: "Structural design, repair logic, production support",
+                },
+                {
+                  label: "Engineering Output",
+                  value: "Repair drawings, concessions, ESDM, ENCA",
+                },
+                {
+                  label: "Systems",
+                  value: "CATIA V5 • ENOVIA • SAP",
+                },
+              ].map((item, index) => (
+                <div
+                  key={item.label}
+                  className={`rounded-2xl border border-stroke bg-slate-950/45 p-4 ${
+                    index === 1 ? "animate-drift" : ""
+                  }`}
+                >
+                  <p className="text-xs uppercase tracking-[0.3em] text-slate-400">
+                    {item.label}
+                  </p>
+                  <p className="mt-3 text-base leading-7 text-white">{item.value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
